@@ -1,17 +1,17 @@
+// set up
 const express = require('express');
 const app = express();
+const cookieParser = require('cookie-parser'); // read values from a cookie
+app.use(cookieParser());
+const bodyParser = require('body-parser');  // make POST reqs human readable
+app.use(bodyParser.urlencoded({extended: true}));
 const PORT = 8080;
-
 app.set('view engine', 'ejs');
 
 // confirm server is running
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}`);
 });
-
-// import body-parser library to make POST reqs human readable
-const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extended: true}));
 
 // generate 6 random alphanumeric characters
 const generateRandomString = function() {
@@ -39,14 +39,15 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, username: req.cookies.username };
   res.render('urls_index', templateVars);
 });
 
 
 // create new short url
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  let templateVars = { username: req.cookies.username };
+  res.render('urls_new', templateVars);
 });
 
 app.post('/urls', (req, res) => {
@@ -55,10 +56,13 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+
+// view url
 app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies.username
   };
   res.render('urls_show', templateVars);
 });
@@ -85,4 +89,18 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
+});
+
+
+// log in
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
+
+// log out
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
 });
