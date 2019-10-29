@@ -92,6 +92,12 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 
+// register
+app.get('/register', (req, res) => {
+  let templateVars = { username: req.cookies.username };
+  res.render('register', templateVars);
+});
+
 // log in
 app.post('/login', (req, res) => {
   const username = req.body.username;
