@@ -33,7 +33,7 @@ const urlDatabase = {
 
 // list of responses to requests
 
-// getting list of urls in database
+// get list of urls in database
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
@@ -44,7 +44,7 @@ app.get('/urls', (req, res) => {
 });
 
 
-// create new url
+// create new short url
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
 });
@@ -61,6 +61,15 @@ app.get('/urls/:shortURL', (req, res) => {
     longURL: urlDatabase[req.params.shortURL]
   };
   res.render('urls_show', templateVars);
+});
+
+
+// edit long url
+app.post('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  res.redirect('/urls');
 });
 
 
