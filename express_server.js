@@ -14,7 +14,7 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}));
 
 // generate 6 random alphanumeric characters
-function generateRandomString() {
+const generateRandomString = function() {
   let result = '';
   let charac = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let characLength = charac.length;
@@ -22,7 +22,7 @@ function generateRandomString() {
     result += charac.charAt(Math.random() * characLength);
   }
   return result;
-}
+};
 
 // object containing short and long urls
 const urlDatabase = {
@@ -48,8 +48,8 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  res.send('Ok');
-})
+  res.redirect(`/urls/${shortURL}`);
+});
 
 app.get('/urls/new', (req, res) => {
   res.render('urls_new');
