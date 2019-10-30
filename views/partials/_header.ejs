@@ -12,8 +12,8 @@
     </div>
 
     <!-- user login/logout -->
-    <% if (username) { %>
-    <span class="navbar-text text-white" style="margin-right: 15px;">Hello, <%= username %>!</span>
+    <% if (user) { %>
+    <span class="navbar-text text-white" style="margin-right: 15px;">Hello, <%= user.email %>!</span>
     <form method="POST" action="/logout"><button type="submit" class="btn btn-dark">Logout</button></form>
     <% } else {%>
       <form method="POST" action="/login" class="form-inline">
