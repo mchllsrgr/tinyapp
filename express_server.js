@@ -150,9 +150,25 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const user = users[req.cookies.user_id];
-  res.cookie('user_id', req.cookies.user_id);
-  res.redirect('/urls');
+  const inputEmail = req.body.email;
+  const inputPassword = req.body.password;
+
+  if (checkEmailExist(inputEmail)) {
+    for (let userId in users) {
+      const user = users[userId];
+      if (inputEmail === user.email) {
+        if (inputPassword === user.password) {
+          res.cookie('user_id', userId);
+          res.redirect('/urls');
+        } else {
+          res.send('Wrong password');
+        }
+      }
+    }
+  } else {
+    res.send('Cannot find email in db.');
+  }
+
 });
 
 
