@@ -112,6 +112,17 @@ app.get('/register', (req, res) => {
   res.render('register', templateVars);
 });
 
+app.post('/register', (req, res) => {
+  const id = generateRandomString();
+  users[id] = {
+    id: id,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('user_id', id);
+  res.redirect('/urls');
+});
+
 
 // log in
 app.post('/login', (req, res) => {
