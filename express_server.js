@@ -98,12 +98,14 @@ app.get('/register', (req, res) => {
   res.render('register', templateVars);
 });
 
+
 // log in
 app.post('/login', (req, res) => {
   const username = req.body.username;
   res.cookie('username', username);
   res.redirect('/urls');
 });
+
 
 // log out
 app.post('/logout', (req, res) => {
