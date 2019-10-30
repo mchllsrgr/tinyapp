@@ -74,8 +74,12 @@ app.get('/urls', (req, res) => {
 
 // create new short url
 app.get('/urls/new', (req, res) => {
-  let templateVars = { user: users[req.cookies.user_id] };
-  res.render('urls_new', templateVars);
+  if (req.cookies.user_id === undefined) {
+    res.redirect('/login');
+  } else {
+    let templateVars = { user: users[req.cookies.user_id] };
+    res.render('urls_new', templateVars);
+  }
 });
 
 app.post('/urls', (req, res) => {
