@@ -54,10 +54,9 @@ const checkEmailExist = function(inputEmail) {
     const userInfo = users[userId];
     if (inputEmail === userInfo.email) {
       return true;
-    } else {
-      return false;
     }
   }
+  return false;
 };
 
 
@@ -129,7 +128,7 @@ app.get('/register', (req, res) => {
 
 app.post('/register', (req, res) => {
   if (checkEmailExist(req.body.email) || req.body.email === '' || req.body.password === '') {
-    res.sendStatus(400);
+    res.status(400).send('E-mail already exists. Please log in.');
   } else {
     const id = generateRandomString();
     users[id] = {
@@ -161,12 +160,12 @@ app.post('/login', (req, res) => {
           res.cookie('user_id', userId);
           res.redirect('/urls');
         } else {
-          res.status(403).send('Wrong password');
+          res.status(403).send('Wrong password.');
         }
       }
     }
   } else {
-    res.status(403).send('Invalid log in e-mail');
+    res.status(403).send('Invalid log in e-mail.');
   }
 
 });
