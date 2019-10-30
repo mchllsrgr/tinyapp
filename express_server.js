@@ -15,23 +15,24 @@ app.listen(PORT, () => {
 
 
 // DATABASE
-// short and long urls
+// short and long urls, associated with userId
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
+  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'userRandomID' },
+  i3BoGr: { longURL: 'https://www.google.ca', userID: 'user2RandomID' }
 };
+
 
 // users
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+  'userRandomID': {
+    id: 'userRandomID',
+    email: 'user@example.com',
+    password: 'purple-monkey-dinosaur'
   },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
+  'user2RandomID': {
+    id: 'user2RandomID',
+    email: 'user2@example.com',
+    password: 'dishwasher-funk'
   }
 };
 
@@ -61,21 +62,25 @@ const checkEmailExist = function(inputEmail) {
 
 
 // SERVER RESPONSES
-// get list of urls in database
+// get list of urls (logged in users)
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
 app.get('/urls', (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
-  res.render('urls_index', templateVars);
+  if (req.cookies.user_id === undefined) {
+    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to view your URLs.');
+  } else {    
+    let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+    res.render('urls_index', templateVars);
+  }
 });
 
 
-// create new short url
+// create new short url (logged in users)
 app.get('/urls/new', (req, res) => {
   if (req.cookies.user_id === undefined) {
-    res.redirect('/login');
+    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to create a new URL.');
   } else {
     let templateVars = { user: users[req.cookies.user_id] };
     res.render('urls_new', templateVars);
