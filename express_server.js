@@ -13,24 +13,15 @@ app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}`);
 });
 
-// generate 6 random alphanumeric characters
-const generateRandomString = function() {
-  let result = '';
-  let charac = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let characLength = charac.length;
-  for (let i = 0; i < 6; i++) {
-    result += charac.charAt(Math.random() * characLength);
-  }
-  return result;
-};
 
-// object containing short and long urls
+// DATABASE
+// short and long urls
 const urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com'
 };
 
-// object containing users
+// users
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -45,8 +36,32 @@ const users = {
 };
 
 
-// list of responses to requests
+// FUNCTIONS
+// generate userid and short url - 6 random alphanumeric characters
+const generateRandomString = function() {
+  let result = '';
+  let charac = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let characLength = charac.length;
+  for (let i = 0; i < 6; i++) {
+    result += charac.charAt(Math.random() * characLength);
+  }
+  return result;
+};
 
+// check if email already exists in database
+const checkEmailExist = function(inputEmail) {
+  for (let userId in users) {
+    const userInfo = users[userId];
+    if (inputEmail === userInfo.email) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
+
+// SERVER RESPONSES
 // get list of urls in database
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
@@ -113,14 +128,18 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const id = generateRandomString();
-  users[id] = {
-    id: id,
-    email: req.body.email,
-    password: req.body.password
-  };
-  res.cookie('user_id', id);
-  res.redirect('/urls');
+  if (checkEmailExist(req.body.email) || req.body.email === '' || req.body.password === '') {
+    res.sendStatus(400);
+  } else {
+    const id = generateRandomString();
+    users[id] = {
+      id: id,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie('user_id', id);
+    res.redirect('/urls');
+  }
 });
 
 
