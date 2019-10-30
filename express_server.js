@@ -60,6 +60,16 @@ const checkEmailExist = function(inputEmail) {
   return false;
 };
 
+// return urls for logged in user
+const urlsForUser = function(id) {
+  const filteredList = {};
+  for (let url in urlDatabase) {
+    if (id === urlDatabase[url].userID) {
+      filteredList[url] = urlDatabase[url];
+    }
+  }
+  return filteredList;
+} 
 
 // SERVER RESPONSES
 // get list of urls (logged in users)
@@ -70,8 +80,8 @@ app.get('/urls.json', (req, res) => {
 app.get('/urls', (req, res) => {
   if (req.cookies.user_id === undefined) {
     res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to view your URLs.');
-  } else {    
-    let templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  } else {
+    let templateVars = { urls: urlsForUser(req.cookies.user_id), user: users[req.cookies.user_id] };
     res.render('urls_index', templateVars);
   }
 });
@@ -124,7 +134,8 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // redirect short url to long url
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL].longURL;
   res.redirect(longURL);
 });
 
