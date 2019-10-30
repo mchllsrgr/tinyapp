@@ -144,6 +144,11 @@ app.post('/register', (req, res) => {
 
 
 // log in
+app.get('/login', (req, res) => {
+  let templateVars = { user: users[req.cookies.user_id] };
+  res.render('login', templateVars);
+});
+
 app.post('/login', (req, res) => {
   const user = users[req.cookies.user_id];
   res.cookie('user_id', req.cookies.user_id);
