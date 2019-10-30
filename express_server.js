@@ -161,12 +161,12 @@ app.post('/login', (req, res) => {
           res.cookie('user_id', userId);
           res.redirect('/urls');
         } else {
-          res.send('Wrong password');
+          res.status(403).send('Wrong password');
         }
       }
     }
   } else {
-    res.send('Cannot find email in db.');
+    res.status(403).send('Invalid log in e-mail');
   }
 
 });
