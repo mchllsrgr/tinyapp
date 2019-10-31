@@ -115,12 +115,16 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 
-// edit long url
+// edit long url (logged in users)
 app.post('/urls/:shortURL', (req, res) => {
-  const shortURL = req.params.shortURL;
-  const newLongURL = req.body.longURL;
-  urlDatabase[shortURL].longURL = newLongURL;
-  res.redirect('/urls');
+  if (req.cookies.user_id === undefined) {
+    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to edit a URL.')
+  } else {
+    const shortURL = req.params.shortURL;
+    const newLongURL = req.body.longURL;
+    urlDatabase[shortURL].longURL = newLongURL;
+    res.redirect('/urls');
+  }
 });
 
 
