@@ -178,7 +178,7 @@ app.post('/register', (req, res) => {
   if (req.body.email === '' || req.body.password === '') {
     res.status(400).send('Please enter a valid e-mail/password.');
   } else if (getUserByEmail(req.body.email, users)) {
-    res.status(400).send('E-mail already exists. Please log in.');
+    res.status(400).send('E-mail already exists. Please <a href="/login">log in</a>.');
   } else {
     const id = generateRandomString();
     users[id] = {
