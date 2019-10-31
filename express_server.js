@@ -115,27 +115,27 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 
-// edit long url (logged in users)
+// edit long url (logged in as owner)
 app.post('/urls/:shortURL', (req, res) => {
-  if (req.cookies.user_id === undefined) {
-    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to edit a URL.');
-  } else {
-    const shortURL = req.params.shortURL;
-    const newLongURL = req.body.longURL;
+  const shortURL = req.params.shortURL;
+  const newLongURL = req.body.longURL;
+  if (req.cookies.user_id === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = newLongURL;
     res.redirect('/urls');
+  } else {
+    res.send('Please <a href="/login">log in</a> as the URL owner to edit URL.');
   }
 });
 
 
-// delete url
+// delete url (logged in as owner)
 app.post('/urls/:shortURL/delete', (req, res) => {
-  if (res.cookie.user_id === undefined) {
-    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to delete a URL.');
-  } else {
-    const shortURL = req.params.shortURL;
+  const shortURL = req.params.shortURL;
+  if (req.cookies.user_id === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
     res.redirect('/urls');
+  } else {
+    res.send('Please <a href="/login">log in</a> as the URL owner to delete URL.');
   }
 });
 
