@@ -21,8 +21,11 @@ app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}`);
 });
 
+// require helper functions
+const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
 
-// DATABASE
+
+// DATABASES
 // short and long urls, associated with userId
 const urlDatabase = {
   b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'userRandomID' },
@@ -44,41 +47,6 @@ const users = {
 };
 
 
-// HELPER FUNCTIONS
-// generate userid and short url - 6 random alphanumeric characters
-const generateRandomString = function() {
-  let result = '';
-  let charac = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let characLength = charac.length;
-  for (let i = 0; i < 6; i++) {
-    result += charac.charAt(Math.random() * characLength);
-  }
-  return result;
-};
-
-// get user by email lookup
-const getUserByEmail = function(email, database) {
-  for (let user in database) {
-    const userInfo = database[user];
-    if (email === userInfo.email) {
-      return user;
-    }
-  }
-  return false;
-};
-
-// return urls for logged in user
-const urlsForUser = function(id) {
-  const filteredList = {};
-  for (let url in urlDatabase) {
-    if (id === urlDatabase[url].userID) {
-      filteredList[url] = urlDatabase[url];
-    }
-  }
-  return filteredList;
-};
-
-
 // SERVER ROUTES
 // get list of urls (logged in users)
 app.get('/urls.json', (req, res) => {
@@ -89,7 +57,7 @@ app.get('/urls', (req, res) => {
   if (req.session.user_id === undefined) {
     res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to view your URLs.');
   } else {
-    let templateVars = { urls: urlsForUser(req.session.user_id), user: users[req.session.user_id] };
+    let templateVars = { urls: urlsForUser(req.session.user_id, urlDatabase), user: users[req.session.user_id] };
     res.render('urls_index', templateVars);
   }
 });
