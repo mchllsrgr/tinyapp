@@ -32,12 +32,12 @@ const users = {
   'userRandomID': {
     id: 'userRandomID',
     email: 'user@example.com',
-    password: 'purple-monkey-dinosaur'
+    password: bcrypt.hashSync('purple-monkey-dinosaur', 10)
   },
   'user2RandomID': {
     id: 'user2RandomID',
     email: 'user2@example.com',
-    password: 'dishwasher-funk'
+    password: bcrypt.hashSync('dishwasher-funk', 10)
   }
 };
 
@@ -164,15 +164,12 @@ app.post('/register', (req, res) => {
     res.status(400).send('E-mail already exists. Please log in.');
   } else {
     const id = generateRandomString();
-    const password = req.body.password;
-    const hashedPassword = bcrypt.hashSync(password, 10);
     users[id] = {
       id: id,
       email: req.body.email,
-      password: hashedPassword
+      password: bcrypt.hashSync(req.body.password, 10)
     };
     res.cookie('user_id', id);
-    console.log(users)
     res.redirect('/urls');
   }
 });
