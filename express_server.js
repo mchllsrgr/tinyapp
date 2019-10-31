@@ -69,7 +69,7 @@ const urlsForUser = function(id) {
     }
   }
   return filteredList;
-} 
+};
 
 // SERVER RESPONSES
 // get list of urls (logged in users)
@@ -108,7 +108,7 @@ app.post('/urls', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies.user_id]
   };
   res.render('urls_show', templateVars);
