@@ -6,7 +6,7 @@ const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
   keys: ['user']
-}))
+}));
 
 const bodyParser = require('body-parser');  // make POST reqs human readable
 app.use(bodyParser.urlencoded({extended: true}));
@@ -209,6 +209,7 @@ app.post('/login', (req, res) => {
 
 // log out
 app.post('/logout', (req, res) => {
-  res.clearCookie('session', 'session.sig');
+  res.clearCookie('session');
+  res.clearCookie('session.sig');
   res.redirect('/urls');
 });
