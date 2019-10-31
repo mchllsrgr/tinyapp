@@ -83,9 +83,13 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session.user_id };
-  res.redirect(`/urls/${shortURL}`);
+  if (req.session.user_id === undefined) {
+    res.send('Please log in to create a new URL.');
+  } else {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session.user_id };
+    res.redirect(`/urls/${shortURL}`);
+  }
 });
 
 
