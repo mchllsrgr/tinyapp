@@ -32,4 +32,11 @@ const urlsForUser = function(id, database) {
   return filteredList;
 };
 
+// check if url is in database
+const urlValid = function(url, database) {
+  for (let urls in database) {
+    return database[url];
+  }
+}
+
 module.exports = { generateRandomString, getUserByEmail, urlsForUser };
