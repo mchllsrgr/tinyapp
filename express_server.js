@@ -141,11 +141,13 @@ app.post('/urls/:shortURL', (req, res) => {
 // delete url (logged in as owner)
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
-  if (req.session.user_id === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === undefined) {
+    res.send('Please <a href="/login">log in</a> as the URL owner to delete URL.');
+  } else if (req.session.user_id === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
     res.redirect('/urls');
   } else {
-    res.send('Please <a href="/login">log in</a> as the URL owner to delete URL.');
+    res.status(401).send('Require owner access to delete URL.');
   }
 });
 
