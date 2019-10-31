@@ -18,7 +18,7 @@ const getUserByEmail = function(email, database) {
       return user;
     }
   }
-  return false;
+  return undefined;
 };
 
 // return urls for logged in user
