@@ -166,8 +166,12 @@ app.get('/u/:shortURL', (req, res) => {
 
 // register
 app.get('/register', (req, res) => {
-  let templateVars = { user: users[req.session.user_id] };
-  res.render('register', templateVars);
+  if (req.session.user_id === undefined) {
+    let templateVars = { user: users[req.session.user_id] };
+    res.render('register', templateVars);
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 app.post('/register', (req, res) => {
