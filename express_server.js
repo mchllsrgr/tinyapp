@@ -29,7 +29,6 @@ const urlDatabase = {
   i3BoGr: { longURL: 'https://www.google.ca', userID: 'user2RandomID' }
 };
 
-
 // users
 const users = {
   'userRandomID': {
@@ -45,7 +44,7 @@ const users = {
 };
 
 
-// FUNCTIONS
+// HELPER FUNCTIONS
 // generate userid and short url - 6 random alphanumeric characters
 const generateRandomString = function() {
   let result = '';
@@ -57,12 +56,12 @@ const generateRandomString = function() {
   return result;
 };
 
-// check if email already exists in database
-const checkEmailExist = function(inputEmail) {
-  for (let userId in users) {
-    const userInfo = users[userId];
-    if (inputEmail === userInfo.email) {
-      return true;
+// get user by email lookup
+const getUserByEmail = function(email, database) {
+  for (let user in database) {
+    const userInfo = database[user];
+    if (email === userInfo.email) {
+      return user;
     }
   }
   return false;
@@ -79,7 +78,8 @@ const urlsForUser = function(id) {
   return filteredList;
 };
 
-// SERVER RESPONSES
+
+// SERVER ROUTES
 // get list of urls (logged in users)
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
@@ -163,7 +163,7 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  if (checkEmailExist(req.body.email) || req.body.email === '' || req.body.password === '') {
+  if (getUserByEmail(req.body.email, users) || req.body.email === '' || req.body.password === '') {
     res.status(400).send('E-mail already exists. Please log in.');
   } else {
     const id = generateRandomString();
@@ -188,7 +188,7 @@ app.post('/login', (req, res) => {
   const inputEmail = req.body.email;
   const inputPassword = req.body.password;
 
-  if (checkEmailExist(inputEmail)) {
+  if (getUserByEmail(inputEmail, users)) {
     for (let userId in users) {
       const user = users[userId];
       if (inputEmail === user.email) {
