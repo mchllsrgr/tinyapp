@@ -2,6 +2,9 @@
 const express = require('express');
 const app = express();
 
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
+
 const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
@@ -101,7 +104,7 @@ app.get('/urls/:shortURL', (req, res) => {
     res.status(404).send('URL not found.');
   } else { // url is in db
     if (req.session.user_id === undefined) { // user not logged in
-      res.send('Please <a href="/login">log in</a> to edit this URL.');
+      res.send('Please <a href="/login">log in</a> to view this URL.');
     } else { // user is logged in
       if (req.session.user_id === urlDatabase[shortURL].userID) { // user is owner
         for (let url in urlDatabase) {
@@ -115,7 +118,7 @@ app.get('/urls/:shortURL', (req, res) => {
           }
         }
       } else { // user is not owner
-        res.status(401).send('Require owner access to edit URL.');
+        res.status(401).send('Require owner access to view this URL.');
       }
     }
   }
