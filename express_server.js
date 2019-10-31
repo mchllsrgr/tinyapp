@@ -127,12 +127,12 @@ app.get('/urls/:shortURL', (req, res) => {
 app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const newLongURL = req.body.longURL;
-  if (req.session.user_id === undefined) {
+  if (req.session.user_id === undefined) { // user not logged in
     res.send('Please <a href="/login">log in</a> as the URL owner to edit URL.');
-  } else if (req.session.user_id === urlDatabase[shortURL].userID) {
+  } else if (req.session.user_id === urlDatabase[shortURL].userID) { // user is owner
     urlDatabase[shortURL].longURL = newLongURL;
     res.redirect('/urls');
-  } else {
+  } else { // user is not owner
     res.status(401).send('Require owner access to edit URL');
   }
 });
@@ -141,12 +141,12 @@ app.post('/urls/:shortURL', (req, res) => {
 // delete url (logged in as owner)
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
-  if (req.session.user_id === undefined) {
+  if (req.session.user_id === undefined) { // user not logged in
     res.send('Please <a href="/login">log in</a> as the URL owner to delete URL.');
-  } else if (req.session.user_id === urlDatabase[shortURL].userID) {
+  } else if (req.session.user_id === urlDatabase[shortURL].userID) { // user is owner
     delete urlDatabase[shortURL];
     res.redirect('/urls');
-  } else {
+  } else { // user is not owner
     res.status(401).send('Require owner access to delete URL.');
   }
 });
@@ -155,7 +155,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 // redirect short url to long url
 app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
-  if (urlValid(shortURL, urlDatabase)) {
+  if (urlValid(shortURL, urlDatabase)) { // check if url is in db
     const longURL = urlDatabase[shortURL].longURL;
     res.redirect(longURL);
   } else {
@@ -175,9 +175,9 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  if (req.body.email === '' || req.body.password === '') {
+  if (req.body.email === '' || req.body.password === '') { // reject empty fields
     res.status(400).send('Please enter a valid e-mail/password.');
-  } else if (getUserByEmail(req.body.email, users)) {
+  } else if (getUserByEmail(req.body.email, users)) { // existing user tries to register
     res.status(400).send('E-mail already exists. Please <a href="/login">log in</a>.');
   } else {
     const id = generateRandomString();
@@ -202,7 +202,7 @@ app.post('/login', (req, res) => {
   const inputEmail = req.body.email;
   const inputPassword = req.body.password;
 
-  if (getUserByEmail(inputEmail, users)) {
+  if (getUserByEmail(inputEmail, users)) { // check if user is in db
     for (let userId in users) {
       const user = users[userId];
       if (inputEmail === user.email) {
