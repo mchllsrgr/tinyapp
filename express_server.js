@@ -22,7 +22,7 @@ app.listen(PORT, () => {
 });
 
 // require helper functions
-const { generateRandomString, getUserByEmail, urlsForUser } = require('./helpers');
+const { generateRandomString, getUserByEmail, urlsForUser, urlValid } = require('./helpers');
 
 
 // DATABASES
@@ -91,17 +91,32 @@ app.post('/urls', (req, res) => {
 
 // view url
 app.get('/urls/:shortURL', (req, res) => {
-  for (let url in urlDatabase) {
-    if (req.params.shortURL === url) {
-      let templateVars = {
-        shortURL: req.params.shortURL,
-        longURL: urlDatabase[req.params.shortURL].longURL,
-        user: users[req.session.user_id]
-      };
-      res.render('urls_show', templateVars);
+  const shortURL = req.params.shortURL;
+
+  if (!urlValid(shortURL, urlDatabase)) { // if url is no in db
+    res.status(404).send('URL not found.');
+  } else { // url is in db
+    if (req.session.user_id === undefined) { // user not logged in
+      res.send('Please <a href="/login">log in</a> to edit this URL.');
+    } else { // user is logged in
+      if (req.session.user_id === urlDatabase[shortURL].userID) { // user is owner
+        for (let url in urlDatabase) {
+          if (req.params.shortURL === url) {
+            let templateVars = {
+              shortURL: req.params.shortURL,
+              longURL: urlDatabase[req.params.shortURL].longURL,
+              user: users[req.session.user_id]
+            };
+            res.render('urls_show', templateVars);
+          }
+        }
+      } else { // user is not owner
+        res.status(401).send('Require owner access to edit URL.');
+      }
     }
   }
-  res.status(404).send('URL not found.');
+
+
 });
 
 
