@@ -127,11 +127,13 @@ app.get('/urls/:shortURL', (req, res) => {
 app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const newLongURL = req.body.longURL;
-  if (req.session.user_id === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === undefined) {
+    res.send('Please <a href="/login">log in</a> as the URL owner to edit URL.');
+  } else if (req.session.user_id === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = newLongURL;
     res.redirect('/urls');
   } else {
-    res.send('Please <a href="/login">log in</a> as the URL owner to edit URL.');
+    res.status(401).send('Require owner access to edit URL');
   }
 });
 
