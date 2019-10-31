@@ -48,7 +48,16 @@ const users = {
 
 
 // SERVER ROUTES
-// get list of urls (logged in users)
+// root
+app.get('/', (req, res) => {
+  if (req.session.user_id === undefined) {
+    res.redirect('/login');
+  } else {
+    res.redirect('/urls');
+  }
+});
+
+// get list of urls
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
@@ -66,7 +75,7 @@ app.get('/urls', (req, res) => {
 // create new short url (logged in users)
 app.get('/urls/new', (req, res) => {
   if (req.session.user_id === undefined) {
-    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to create a new URL.');
+    res.redirect('/login');
   } else {
     let templateVars = { user: users[req.session.user_id] };
     res.render('urls_new', templateVars);
@@ -82,12 +91,17 @@ app.post('/urls', (req, res) => {
 
 // view url
 app.get('/urls/:shortURL', (req, res) => {
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.session.user_id]
-  };
-  res.render('urls_show', templateVars);
+  for (let url in urlDatabase) {
+    if (req.params.shortURL === url) {
+      let templateVars = {
+        shortURL: req.params.shortURL,
+        longURL: urlDatabase[req.params.shortURL].longURL,
+        user: users[req.session.user_id]
+      };
+      res.render('urls_show', templateVars);
+    }
+  }
+  res.status(404).send('URL not found.');
 });
 
 
