@@ -2,8 +2,14 @@
 const express = require('express');
 const app = express();
 
-const cookieParser = require('cookie-parser'); // read values from a cookie
-app.use(cookieParser());
+// const cookieParser = require('cookie-parser'); // read values from a cookie
+// app.use(cookieParser());
+
+const cookieSession = require('cookie-session');
+app.use(cookieSession({
+  name: 'session',
+  keys: ['user']
+}))
 
 const bodyParser = require('body-parser');  // make POST reqs human readable
 app.use(bodyParser.urlencoded({extended: true}));
