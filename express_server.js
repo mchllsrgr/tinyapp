@@ -116,7 +116,6 @@ app.get('/urls/:shortURL', (req, res) => {
     }
   }
 
-
 });
 
 
@@ -148,8 +147,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 // redirect short url to long url
 app.get('/u/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  res.redirect(longURL);
+  if (urlValid(shortURL, urlDatabase)) {
+    const longURL = urlDatabase[shortURL].longURL;
+    res.redirect(longURL);
+  } else {
+    res.status(404).send('Invalid URL.');
+  }
 });
 
 
