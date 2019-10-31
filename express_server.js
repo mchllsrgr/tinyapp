@@ -2,9 +2,6 @@
 const express = require('express');
 const app = express();
 
-// const cookieParser = require('cookie-parser'); // read values from a cookie
-// app.use(cookieParser());
-
 const cookieSession = require('cookie-session');
 app.use(cookieSession({
   name: 'session',
@@ -89,10 +86,10 @@ app.get('/urls.json', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  if (req.cookies.user_id === undefined) {
+  if (req.session.user_id === undefined) {
     res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to view your URLs.');
   } else {
-    let templateVars = { urls: urlsForUser(req.cookies.user_id), user: users[req.cookies.user_id] };
+    let templateVars = { urls: urlsForUser(req.session.user_id), user: users[req.session.user_id] };
     res.render('urls_index', templateVars);
   }
 });
@@ -100,17 +97,17 @@ app.get('/urls', (req, res) => {
 
 // create new short url (logged in users)
 app.get('/urls/new', (req, res) => {
-  if (req.cookies.user_id === undefined) {
+  if (req.session.user_id === undefined) {
     res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to create a new URL.');
   } else {
-    let templateVars = { user: users[req.cookies.user_id] };
+    let templateVars = { user: users[req.session.user_id] };
     res.render('urls_new', templateVars);
   }
 });
 
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: req.session.user_id };
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -120,7 +117,7 @@ app.get('/urls/:shortURL', (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.cookies.user_id]
+    user: users[req.session.user_id]
   };
   res.render('urls_show', templateVars);
 });
@@ -130,7 +127,7 @@ app.get('/urls/:shortURL', (req, res) => {
 app.post('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const newLongURL = req.body.longURL;
-  if (req.cookies.user_id === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === urlDatabase[shortURL].userID) {
     urlDatabase[shortURL].longURL = newLongURL;
     res.redirect('/urls');
   } else {
@@ -142,7 +139,7 @@ app.post('/urls/:shortURL', (req, res) => {
 // delete url (logged in as owner)
 app.post('/urls/:shortURL/delete', (req, res) => {
   const shortURL = req.params.shortURL;
-  if (req.cookies.user_id === urlDatabase[shortURL].userID) {
+  if (req.session.user_id === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
     res.redirect('/urls');
   } else {
@@ -161,7 +158,7 @@ app.get('/u/:shortURL', (req, res) => {
 
 // register
 app.get('/register', (req, res) => {
-  let templateVars = { user: users[req.cookies.user_id] };
+  let templateVars = { user: users[req.session.user_id] };
   res.render('register', templateVars);
 });
 
@@ -175,7 +172,7 @@ app.post('/register', (req, res) => {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
-    res.cookie('user_id', id);
+    req.session.user_id = id;
     res.redirect('/urls');
   }
 });
@@ -183,7 +180,7 @@ app.post('/register', (req, res) => {
 
 // log in
 app.get('/login', (req, res) => {
-  let templateVars = { user: users[req.cookies.user_id] };
+  let templateVars = { user: users[req.session.user_id] };
   res.render('login', templateVars);
 });
 
@@ -196,7 +193,7 @@ app.post('/login', (req, res) => {
       const user = users[userId];
       if (inputEmail === user.email) {
         if (bcrypt.compareSync(inputPassword, user.password)) {
-          res.cookie('user_id', userId);
+          req.session.user_id = userId;
           res.redirect('/urls');
         } else {
           res.status(403).send('Wrong password.');
@@ -212,6 +209,6 @@ app.post('/login', (req, res) => {
 
 // log out
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  res.clearCookie('session', 'session.sig');
   res.redirect('/urls');
 });
