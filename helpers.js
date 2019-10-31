@@ -39,4 +39,4 @@ const urlValid = function(url, database) {
   }
 }
 
-module.exports = { generateRandomString, getUserByEmail, urlsForUser };
+module.exports = { generateRandomString, getUserByEmail, urlsForUser, urlValid };
