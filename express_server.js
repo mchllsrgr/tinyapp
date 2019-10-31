@@ -189,7 +189,7 @@ app.post('/login', (req, res) => {
     for (let userId in users) {
       const user = users[userId];
       if (inputEmail === user.email) {
-        if (inputPassword === user.password) {
+        if (bcrypt.compareSync(inputPassword, user.password)) {
           res.cookie('user_id', userId);
           res.redirect('/urls');
         } else {
