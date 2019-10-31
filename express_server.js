@@ -1,10 +1,15 @@
 // set up
 const express = require('express');
 const app = express();
+
 const cookieParser = require('cookie-parser'); // read values from a cookie
 app.use(cookieParser());
+
 const bodyParser = require('body-parser');  // make POST reqs human readable
 app.use(bodyParser.urlencoded({extended: true}));
+
+const bcrypt = require('bcrypt'); // hash passwords
+
 const PORT = 8080;
 app.set('view engine', 'ejs');
 
@@ -159,12 +164,15 @@ app.post('/register', (req, res) => {
     res.status(400).send('E-mail already exists. Please log in.');
   } else {
     const id = generateRandomString();
+    const password = req.body.password;
+    const hashedPassword = bcrypt.hashSync(password, 10);
     users[id] = {
       id: id,
       email: req.body.email,
-      password: req.body.password
+      password: hashedPassword
     };
     res.cookie('user_id', id);
+    console.log(users)
     res.redirect('/urls');
   }
 });
