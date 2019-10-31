@@ -118,7 +118,7 @@ app.get('/urls/:shortURL', (req, res) => {
 // edit long url (logged in users)
 app.post('/urls/:shortURL', (req, res) => {
   if (req.cookies.user_id === undefined) {
-    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to edit a URL.')
+    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to edit a URL.');
   } else {
     const shortURL = req.params.shortURL;
     const newLongURL = req.body.longURL;
@@ -130,9 +130,13 @@ app.post('/urls/:shortURL', (req, res) => {
 
 // delete url
 app.post('/urls/:shortURL/delete', (req, res) => {
-  const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect('/urls');
+  if (res.cookie.user_id === undefined) {
+    res.send('Please <a href="/login">log in</a> or <a href="/register">register</a> to delete a URL.');
+  } else {
+    const shortURL = req.params.shortURL;
+    delete urlDatabase[shortURL];
+    res.redirect('/urls');
+  }
 });
 
 
