@@ -142,7 +142,7 @@ app.post('/urls/:shortURL', (req, res) => {
 
 
 // delete url (logged in as owner)
-app.post('/urls/:shortURL/delete', (req, res) => {
+app.delete('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   if (req.session.user_id === undefined) { // user not logged in
     res.send('Please <a href="/login">log in</a> as the URL owner to delete URL.');
