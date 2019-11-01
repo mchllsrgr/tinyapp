@@ -127,7 +127,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
 
 // edit long url (logged in as owner)
-app.post('/urls/:shortURL', (req, res) => {
+app.put('/urls/:shortURL', (req, res) => {
   const shortURL = req.params.shortURL;
   const newLongURL = req.body.longURL;
   if (req.session.user_id === undefined) { // user not logged in
